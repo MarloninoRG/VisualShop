@@ -1,0 +1,9 @@
+Flask
+Flask-SQLAlchemy
+Flask-JWT-Extended
+Flask-Bcrypt
+Flask-Cors
+psycopg[binary]
+python-dotenv
+requests
+sendgrid

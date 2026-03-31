@@ -1,0 +1,31 @@
+import os
+from dotenv import load_dotenv
+
+# Carga las variables del archivo .env al entorno
+load_dotenv()
+
+
+class Config:
+    """Configuracion base de la aplicacion.
+    Todas las variables sensibles se leen del archivo .env
+    para no exponer contrasenas en el codigo."""
+
+    # Clave secreta de Flask (para sesiones y seguridad)
+    SECRET_KEY = os.getenv('SECRET_KEY', 'clave-por-defecto')
+
+    # Conexion a PostgreSQL
+    # SQLAlchemy usa esta variable para saber a que BD conectarse
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'sqlite:///fallback.db')
+
+    # Desactiva un sistema de notificaciones que consume memoria
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    # Configuracion de JWT
+    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'jwt-clave-por-defecto')
+    JWT_ACCESS_TOKEN_EXPIRES = 3600  # El token expira en 1 hora (3600 segundos)
+
+    # APIs externas
+    SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
+    EXCHANGERATE_API_KEY = os.getenv('EXCHANGERATE_API_KEY')
+    OPENWEATHER_API_KEY = os.getenv('OPENWEATHER_API_KEY')
+    FACTURAPI_API_KEY = os.getenv('FACTURAPI_API_KEY')

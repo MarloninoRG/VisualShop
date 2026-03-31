@@ -1,0 +1,1 @@
+# Vacio por ahora - aqui iran funciones auxiliares
