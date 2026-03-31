@@ -48,6 +48,12 @@ def create_app():
     
     from app.routes.barcode import barcode_bp
     app.register_blueprint(barcode_bp)
+    
+    from app.routes.ventas import ventas_bp
+    app.register_blueprint(ventas_bp)
+
+    from app.routes.exchange import exchange_bp
+    app.register_blueprint(exchange_bp)
 
     # 5. Crear las tablas si no existen
     with app.app_context():
