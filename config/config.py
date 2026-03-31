@@ -29,3 +29,7 @@ class Config:
     EXCHANGERATE_API_KEY = os.getenv('EXCHANGERATE_API_KEY')
     OPENWEATHER_API_KEY = os.getenv('OPENWEATHER_API_KEY')
     FACTURAPI_API_KEY = os.getenv('FACTURAPI_API_KEY')
+    
+    # Google OAuth
+    GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
+    GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')

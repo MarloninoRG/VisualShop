@@ -7,3 +7,4 @@ psycopg[binary]
 python-dotenv
 requests
 sendgrid
+requests-oauthlib
