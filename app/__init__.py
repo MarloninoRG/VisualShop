@@ -40,6 +40,15 @@ def create_app():
     from app.routes.test import test_bp
     app.register_blueprint(test_bp)
 
+    from app.routes.categorias import categorias_bp
+    app.register_blueprint(categorias_bp)
+
+    from app.routes.productos import productos_bp
+    app.register_blueprint(productos_bp)
+    
+    from app.routes.barcode import barcode_bp
+    app.register_blueprint(barcode_bp)
+
     # 5. Crear las tablas si no existen
     with app.app_context():
         from app.models import Usuario, Producto, Categoria, Venta, DetalleVenta
