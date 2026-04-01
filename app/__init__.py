@@ -54,6 +54,9 @@ def create_app():
 
     from app.routes.exchange import exchange_bp
     app.register_blueprint(exchange_bp)
+    
+    from app.routes.views import views_bp
+    app.register_blueprint(views_bp)
 
     # 5. Crear las tablas si no existen
     with app.app_context():

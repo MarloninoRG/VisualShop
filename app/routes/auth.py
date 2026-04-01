@@ -216,7 +216,8 @@ def google_login():
             'prompt': 'select_account'
         }
 
-        query = '&'.join(f'{k}={v}' for k, v in params.items())
+        from urllib.parse import urlencode
+        query = urlencode(params)
         auth_url = f'{authorization_endpoint}?{query}'
 
         return jsonify({'auth_url': auth_url}), 200
@@ -290,12 +291,17 @@ def google_callback():
         jwt_access = create_access_token(identity=str(usuario.id))
         jwt_refresh = create_refresh_token(identity=str(usuario.id))
 
-        return jsonify({
-            'mensaje': 'Login con Google exitoso',
-            'access_token': jwt_access,
-            'refresh_token': jwt_refresh,
-            'usuario': usuario.to_dict()
-        }), 200
+        import json
+        usuario_json = json.dumps(usuario.to_dict())
+        html = f'''
+        <html><body><script>
+            localStorage.setItem('access_token', '{jwt_access}');
+            localStorage.setItem('refresh_token', '{jwt_refresh}');
+            localStorage.setItem('usuario', '{usuario_json}');
+            window.location.href = '/dashboard';
+        </script></body></html>
+        '''
+        return html
 
     except Exception:
         return jsonify({'error': 'Error al procesar login con Google'}), 500

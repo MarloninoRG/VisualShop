@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - VisualShop{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-2">
+    <div>
+        <h4 style="color:var(--vs-navy);font-weight:500;margin:0">Dashboard</h4>
+        <p style="font-size:13px;color:var(--vs-gray);margin:4px 0 0" id="dashboard-date">Cargando...</p>
+    </div>
+    <button class="btn btn-vs btn-sm" onclick="loadDashboard()">
+        <i class="bi bi-arrow-clockwise"></i> Actualizar
+    </button>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="metric-card">
+            <p class="metric-label">Ventas hoy</p>
+            <p class="metric-value" id="metric-ventas">--</p>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="metric-card">
+            <p class="metric-label">Total del dia</p>
+            <p class="metric-value" id="metric-total">--</p>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="metric-card">
+            <p class="metric-label">Productos vendidos</p>
+            <p class="metric-value" id="metric-productos">--</p>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="metric-card">
+            <p class="metric-label">Stock bajo</p>
+            <p class="metric-value" id="metric-stock" style="color:#991b1b">--</p>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-lg-8">
+        <div class="card-vs">
+            <p class="card-vs-title">Ventas de la semana</p>
+            <div style="position:relative;height:250px">
+                <canvas id="chart-ventas"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card-vs">
+            <p class="card-vs-title">Top productos</p>
+            <div id="top-productos">
+                <p style="font-size:13px;color:var(--vs-gray)">Cargando...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card-vs">
+    <p class="card-vs-title">Ultimas ventas</p>
+    <div class="table-responsive">
+        <table class="table-vs">
+            <thead>
+                <tr>
+                    <th>Ticket</th>
+                    <th>Cajero</th>
+                    <th>Total</th>
+                    <th>Metodo</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-ventas">
+                <tr><td colspan="5" style="text-align:center;color:var(--vs-gray)">Cargando...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

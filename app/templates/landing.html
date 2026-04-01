@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VisualShop - Sistema de Punto de Venta</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/landing.css') }}" rel="stylesheet">
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-vs sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <div style="width:30px;height:30px;border-radius:8px;background:var(--vs-navy);display:flex;align-items:center;justify-content:center">
+                    <i class="bi bi-bag" style="color:var(--vs-lavender);font-size:14px"></i>
+                </div>
+                VisualShop
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" style="border-color:var(--vs-gray-light)">
+                <i class="bi bi-list" style="color:#fff;font-size:24px"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto me-3">
+                    <li class="nav-item"><a class="nav-link" href="#funcionalidades">Funcionalidades</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#como-funciona">Como funciona</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#beneficios">Beneficios</a></li>
+                </ul>
+                <a href="#login-form" class="btn btn-vs-primary btn-sm">Iniciar sesion</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-7">
+                    <h1 class="hero-title mb-3">Tu negocio en orden,<br>tus ventas bajo control</h1>
+                    <p class="hero-subtitle mb-4">Sistema de punto de venta para pequenos negocios. Registra ventas, controla inventario, genera facturas y toma decisiones con datos reales.</p>
+                    <div class="d-flex gap-3 mb-4">
+                        <a href="#login-form" class="btn btn-vs-secondary">Comenzar gratis</a>
+                        <a href="#como-funciona" class="btn btn-vs-outline">Ver como funciona</a>
+                    </div>
+                    <div class="row g-4 mt-2">
+                        <div class="col-auto">
+                            <p class="hero-stat-value">100%</p>
+                            <p class="hero-stat-label">Web, sin instalar</p>
+                        </div>
+                        <div class="col-auto">
+                            <p class="hero-stat-value">3 roles</p>
+                            <p class="hero-stat-label">Admin, supervisor, cajero</p>
+                        </div>
+                        <div class="col-auto">
+                            <p class="hero-stat-value">7 APIs</p>
+                            <p class="hero-stat-label">Integradas</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <div class="login-card" id="login-form">
+                        <h5 style="text-align:center;color:var(--vs-navy);margin-bottom:16px">Inicia sesion</h5>
+                        <div id="login-alert" class="alert-vs mb-3"></div>
+                        <div class="mb-3">
+                            <label>Correo electronico</label>
+                            <input type="email" class="form-control" id="login-email" placeholder="tu@email.com">
+                        </div>
+                        <div class="mb-3">
+                            <label>Contrasena</label>
+                            <input type="password" class="form-control" id="login-password" placeholder="********">
+                        </div>
+                        <button class="btn btn-vs-primary w-100" id="btn-login" onclick="handleLogin()">
+                            <span id="login-text">Entrar</span>
+                            <div id="login-spinner" class="spinner-border spinner-vs" role="status"></div>
+                        </button>
+                        <div class="divider">
+                            <span>o continua con</span>
+                        </div>
+                        <button class="btn-google" onclick="handleGoogleLogin()">
+                            <svg width="16" height="16" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                            Continuar con Google
+                        </button>
+                        <p style="font-size:12px;color:var(--vs-gray-light);text-align:center;margin:14px 0 0;cursor:pointer">Olvidaste tu contrasena?</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features-section" id="funcionalidades">
+        <div class="container">
+            <p class="section-label">Funcionalidades</p>
+            <h2 class="section-title mb-4">Todo lo que tu negocio necesita</h2>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="feat-card">
+                        <div class="feat-icon"><i class="bi bi-cart3"></i></div>
+                        <h5>Punto de venta</h5>
+                        <p>Registra ventas rapido con un carrito intuitivo. Acepta efectivo y tarjeta. Genera tickets al instante.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feat-card">
+                        <div class="feat-icon"><i class="bi bi-box-seam"></i></div>
+                        <h5>Control de inventario</h5>
+                        <p>Stock en tiempo real con alertas automaticas cuando un producto esta por agotarse.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feat-card">
+                        <div class="feat-icon"><i class="bi bi-graph-up"></i></div>
+                        <h5>Dashboard inteligente</h5>
+                        <p>Graficas de ventas, productos mas vendidos y metricas para tomar mejores decisiones.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feat-card">
+                        <div class="feat-icon"><i class="bi bi-people"></i></div>
+                        <h5>Control de acceso</h5>
+                        <p>Tres roles con permisos diferentes: admin, supervisor y cajero. Login con Google disponible.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feat-card">
+                        <div class="feat-icon"><i class="bi bi-receipt"></i></div>
+                        <h5>Facturacion CFDI</h5>
+                        <p>Genera facturas electronicas validas ante el SAT directamente desde cada venta.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feat-card">
+                        <div class="feat-icon"><i class="bi bi-upc-scan"></i></div>
+                        <h5>Codigo de barras</h5>
+                        <p>Busca productos por codigo de barras para alta rapida y sin errores de captura.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="how-section" id="como-funciona">
+        <div class="container">
+            <p class="section-label">Como funciona</p>
+            <h2 class="section-title mb-4">Listo en 4 pasos</h2>
+            <div class="row g-4 text-center">
+                <div class="col-6 col-lg-3">
+                    <div class="how-step-num">1</div>
+                    <h6 style="color:var(--vs-navy);font-size:14px">Crea tu cuenta</h6>
+                    <p style="font-size:12px;color:var(--vs-gray)">Registrate como administrador en menos de un minuto</p>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="how-step-num">2</div>
+                    <h6 style="color:var(--vs-navy);font-size:14px">Agrega productos</h6>
+                    <p style="font-size:12px;color:var(--vs-gray)">Da de alta tu inventario manualmente o con codigo de barras</p>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="how-step-num">3</div>
+                    <h6 style="color:var(--vs-navy);font-size:14px">Registra empleados</h6>
+                    <p style="font-size:12px;color:var(--vs-gray)">Invita a tu equipo con el rol adecuado para cada quien</p>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="how-step-num">4</div>
+                    <h6 style="color:var(--vs-navy);font-size:14px">Empieza a vender</h6>
+                    <p style="font-size:12px;color:var(--vs-gray)">Cobra, genera tickets y revisa tus reportes en tiempo real</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="beneficios" style="background:var(--vs-light);padding:60px 0">
+        <div class="container">
+            <p class="section-label">Beneficios</p>
+            <h2 class="section-title mb-4">Por que elegir VisualShop</h2>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="d-flex gap-3 mb-4">
+                        <div class="benefit-icon"><i class="bi bi-cloud"></i></div>
+                        <div>
+                            <h6 class="benefit-title">100% en la nube</h6>
+                            <p class="benefit-desc">No necesitas instalar nada. Accede desde cualquier dispositivo con navegador.</p>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-3 mb-4">
+                        <div class="benefit-icon"><i class="bi bi-shield-lock"></i></div>
+                        <div>
+                            <h6 class="benefit-title">Seguro</h6>
+                            <p class="benefit-desc">Autenticacion JWT, contrasenas encriptadas y control de acceso por roles.</p>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-3">
+                        <div class="benefit-icon"><i class="bi bi-currency-dollar"></i></div>
+                        <div>
+                            <h6 class="benefit-title">Multi-moneda</h6>
+                            <p class="benefit-desc">Precios en MXN y USD con tipo de cambio en tiempo real.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex gap-3 mb-4">
+                        <div class="benefit-icon"><i class="bi bi-phone"></i></div>
+                        <div>
+                            <h6 class="benefit-title">Responsivo</h6>
+                            <p class="benefit-desc">Funciona perfecto en computadora, tablet y celular.</p>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-3 mb-4">
+                        <div class="benefit-icon"><i class="bi bi-bell"></i></div>
+                        <div>
+                            <h6 class="benefit-title">Alertas inteligentes</h6>
+                            <p class="benefit-desc">Te avisa cuando un producto esta por agotarse para que nunca pierdas ventas.</p>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-3">
+                        <div class="benefit-icon"><i class="bi bi-google"></i></div>
+                        <div>
+                            <h6 class="benefit-title">Login con Google</h6>
+                            <p class="benefit-desc">Tus empleados entran con su Gmail sin recordar contrasenas.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="container">
+            <h2 style="font-size:24px;font-weight:500;color:#fff;margin-bottom:8px">Lleva tu negocio al siguiente nivel</h2>
+            <p style="font-size:14px;color:var(--vs-lavender);margin-bottom:24px">Sin instalaciones, sin complicaciones. Solo abre tu navegador.</p>
+            <a href="#login-form" class="btn btn-vs-secondary btn-lg">Comenzar ahora</a>
+        </div>
+    </section>
+
+    <footer class="footer-vs">
+        <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-bag" style="color:var(--vs-gray-light)"></i>
+                <span style="font-size:13px;color:var(--vs-gray-light)">VisualShop 2026</span>
+            </div>
+            <span style="font-size:12px;color:var(--vs-gray)">UTNG - Aplicaciones Web Orientadas a Servicios</span>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/landing.js') }}"></script>
+
+</body>
+</html>
