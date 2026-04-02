@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Nueva venta - VisualShop{% endblock %}
+{% block nav_pos %}active{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/pos.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+    <div class="col-lg-8">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h5 style="color:var(--vs-navy);font-weight:500;margin:0">Nueva venta</h5>
+                <p style="font-size:12px;color:var(--vs-gray);margin:2px 0 0">Selecciona productos o busca por codigo</p>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 mb-3">
+            <input type="text" class="form-control" id="buscar-producto" placeholder="Buscar producto o codigo de barras..." style="background:var(--vs-light);border:1px solid #e5e7eb;border-radius:8px;padding:10px 14px;font-size:13px" oninput="buscarProductos()">
+            <button class="btn btn-vs" onclick="buscarBarcode()" style="white-space:nowrap">
+                <i class="bi bi-upc-scan"></i> Barcode
+            </button>
+        </div>
+
+        <div class="mb-3" id="categorias-filtro">
+            <button class="btn btn-sm filtro-cat active" data-cat="todas" onclick="filtrarCategoria('todas', this)">Todas</button>
+        </div>
+
+        <div class="row g-2" id="grid-productos">
+            <div class="col-12 text-center" style="padding:40px;color:var(--vs-gray)">
+                <i class="bi bi-box-seam" style="font-size:32px"></i>
+                <p style="margin:8px 0 0;font-size:13px">Cargando productos...</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card-vs" style="position:sticky;top:80px">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 style="color:var(--vs-navy);font-weight:500;margin:0">
+                    <i class="bi bi-cart3"></i> Carrito
+                </h6>
+                <span style="font-size:12px;color:var(--vs-gray)" id="carrito-count">0 items</span>
+            </div>
+
+            <div id="carrito-items" style="min-height:100px">
+                <p style="text-align:center;color:var(--vs-gray-light);font-size:13px;padding:30px 0">Agrega productos al carrito</p>
+            </div>
+
+            <div style="border-top:1px solid #e5e7eb;padding-top:12px;margin-top:12px">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span style="font-size:13px;color:var(--vs-gray)">Subtotal</span>
+                    <span style="font-size:13px;color:var(--vs-navy)" id="carrito-subtotal">$0.00</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span style="font-size:16px;font-weight:500;color:var(--vs-navy)">Total</span>
+                    <span style="font-size:22px;font-weight:500;color:var(--vs-navy)" id="carrito-total">$0.00</span>
+                </div>
+                <div id="carrito-usd" style="text-align:right;font-size:11px;color:var(--vs-gray);margin-top:-8px;margin-bottom:12px"></div>
+
+                <div class="d-flex gap-2 mb-2">
+                    <button class="btn metodo-btn active" data-metodo="efectivo" onclick="seleccionarMetodo('efectivo', this)">
+                        <i class="bi bi-cash"></i> Efectivo
+                    </button>
+                    <button class="btn metodo-btn" data-metodo="tarjeta" onclick="seleccionarMetodo('tarjeta', this)">
+                        <i class="bi bi-credit-card"></i> Tarjeta
+                    </button>
+                </div>
+
+                <button class="btn btn-vs w-100" id="btn-cobrar" onclick="procesarVenta()" disabled>
+                    <i class="bi bi-check-circle"></i> Cobrar
+                </button>
+
+                <button class="btn w-100 mt-2" style="background:transparent;border:1px solid #e5e7eb;color:var(--vs-gray);font-size:13px;border-radius:8px;padding:8px" onclick="vaciarCarrito()">
+                    <i class="bi bi-trash3"></i> Vaciar carrito
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-venta-exitosa" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:12px;border:none">
+            <div class="modal-body text-center" style="padding:32px">
+                <div style="width:56px;height:56px;border-radius:50%;background:#f0fdf4;display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
+                    <i class="bi bi-check-lg" style="font-size:28px;color:#166534"></i>
+                </div>
+                <h5 style="color:var(--vs-navy);margin-bottom:8px">Venta registrada</h5>
+                <p style="font-size:14px;color:var(--vs-gray);margin-bottom:4px">Ticket #<span id="venta-ticket-id">000</span></p>
+                <p style="font-size:24px;font-weight:500;color:var(--vs-navy);margin-bottom:20px" id="venta-total-final">$0.00</p>
+                <div class="d-flex gap-2 justify-content-center">
+                    <button class="btn btn-vs" onclick="cerrarModalVenta()">Nueva venta</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
