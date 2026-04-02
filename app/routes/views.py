@@ -19,3 +19,20 @@ def dashboard():
 def pos():
     """Pantalla de nueva venta."""
     return render_template('ventas/pos.html')
+
+@views_bp.route('/productos')
+def productos():
+    """Gestion de productos e inventario."""
+    return render_template('productos/index.html')
+
+
+@views_bp.route('/ventas')
+def ventas():
+    """Historial de ventas."""
+    return render_template('ventas/index.html')
+
+
+@views_bp.route('/usuarios')
+def usuarios():
+    """Gestion de usuarios (solo admin)."""
+    return render_template('usuarios/index.html')

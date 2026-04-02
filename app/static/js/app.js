@@ -1,19 +1,42 @@
 /* Verificar autenticacion */
 function checkAuth() {
-    const token = localStorage.getItem('access_token');
-    const usuario = localStorage.getItem('usuario');
+    var token = localStorage.getItem('access_token');
+    var usuario = localStorage.getItem('usuario');
 
     if (!token || !usuario) {
         window.location.href = '/';
         return null;
     }
 
+    renovarToken();
     return JSON.parse(usuario);
+}
+
+async function renovarToken() {
+    var refreshToken = localStorage.getItem('refresh_token');
+    if (!refreshToken) return;
+
+    try {
+        var res = await fetch('/api/auth/refresh', {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + refreshToken,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (res.ok) {
+            var data = await res.json();
+            localStorage.setItem('access_token', data.access_token);
+        }
+    } catch (err) {
+        /* Si falla la renovacion, el usuario sigue con su token actual */
+    }
 }
 
 /* Cargar datos del usuario en el sidebar */
 function loadUserInfo() {
-    const usuario = checkAuth();
+    var usuario = checkAuth();
     if (!usuario) return;
 
     var nombre = usuario.nombre || 'Usuario';
@@ -23,10 +46,24 @@ function loadUserInfo() {
     document.getElementById('user-name').textContent = nombre;
     document.getElementById('user-role').textContent = usuario.rol;
 
-    /* Ocultar menu de usuarios si no es admin */
+    /* Ocultar menus segun el rol */
+    var rol = usuario.rol;
+
+    var navDashboard = document.querySelector('a[href="/dashboard"]');
+    var navPos = document.querySelector('a[href="/pos"]');
+    var navProductos = document.querySelector('a[href="/productos"]');
+    var navVentas = document.querySelector('a[href="/ventas"]');
     var navUsuarios = document.getElementById('nav-usuarios');
-    if (navUsuarios && usuario.rol !== 'admin') {
-        navUsuarios.style.display = 'none';
+
+    if (rol === 'cajero') {
+        if (navDashboard) navDashboard.style.display = 'none';
+        if (navProductos) navProductos.style.display = 'none';
+        if (navVentas) navVentas.style.display = 'none';
+        if (navUsuarios) navUsuarios.style.display = 'none';
+    } else if (rol === 'supervisor') {
+        if (navUsuarios) navUsuarios.style.display = 'none';
+    } else if (rol === 'admin') {
+        /* Admin ve todo */
     }
 }
 
@@ -73,7 +110,26 @@ function formatMoney(amount) {
     });
 }
 
+function verificarAccesoPagina() {
+    var usuario = JSON.parse(localStorage.getItem('usuario'));
+    if (!usuario) return;
+
+    var ruta = window.location.pathname;
+    var rol = usuario.rol;
+
+    if (rol === 'cajero') {
+        if (ruta === '/dashboard' || ruta === '/productos' || ruta === '/ventas' || ruta === '/usuarios') {
+            window.location.href = '/pos';
+        }
+    } else if (rol === 'supervisor') {
+        if (ruta === '/usuarios') {
+            window.location.href = '/dashboard';
+        }
+    }
+}
+
 /* Cargar info al abrir la pagina */
 document.addEventListener('DOMContentLoaded', function() {
     loadUserInfo();
+    verificarAccesoPagina();
 });

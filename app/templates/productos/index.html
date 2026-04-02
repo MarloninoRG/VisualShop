@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block title %}Productos - VisualShop{% endblock %}
+{% block nav_productos %}active{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/productos.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2 mb-3">
+    <div>
+        <h5 style="color:var(--vs-navy);font-weight:500;margin:0">Productos</h5>
+        <p style="font-size:12px;color:var(--vs-gray);margin:2px 0 0">Gestiona tu inventario</p>
+    </div>
+    <div class="d-flex gap-2">
+        <button class="btn btn-sm" id="btn-stock-bajo" style="background:var(--vs-lavender);color:var(--vs-navy);border-radius:8px;font-size:12px;font-weight:500" onclick="toggleStockBajo()">
+            <i class="bi bi-exclamation-triangle"></i> Stock bajo
+        </button>
+        <button class="btn btn-vs btn-sm" onclick="abrirModalProducto()">
+            <i class="bi bi-plus-lg"></i> Nuevo producto
+        </button>
+    </div>
+</div>
+
+<div class="card-vs mb-3">
+    <div class="d-flex flex-column flex-md-row gap-2">
+        <input type="text" class="form-control" id="buscar-prod" placeholder="Buscar por nombre..." style="background:var(--vs-light);border:1px solid #e5e7eb;border-radius:8px;font-size:13px;padding:8px 12px" oninput="filtrarProductos()">
+        <select class="form-select" id="filtro-categoria" style="max-width:200px;background:var(--vs-light);border:1px solid #e5e7eb;border-radius:8px;font-size:13px;padding:8px 12px" onchange="filtrarProductos()">
+            <option value="">Todas las categorias</option>
+        </select>
+    </div>
+</div>
+
+<div class="card-vs">
+    <div class="table-responsive">
+        <table class="table-vs">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Categoria</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-productos">
+                <tr><td colspan="6" style="text-align:center;color:var(--vs-gray);padding:30px">Cargando...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-producto" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:12px;border:none">
+            <div class="modal-header" style="border-bottom:1px solid #e5e7eb;padding:16px 20px">
+                <h6 style="color:var(--vs-navy);margin:0;font-weight:500" id="modal-producto-titulo">Nuevo producto</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:20px">
+                <div id="producto-alert" class="alert-vs mb-3" style="display:none"></div>
+                <input type="hidden" id="producto-id">
+                <div class="mb-3">
+                    <label style="font-size:13px;color:var(--vs-gray);margin-bottom:4px">Nombre *</label>
+                    <input type="text" class="form-control" id="producto-nombre" style="background:var(--vs-light);border:1px solid #e5e7eb;border-radius:8px;font-size:13px">
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-6">
+                        <label style="font-size:13px;color:var(--vs-gray);margin-bottom:4px">Precio *</label>
+                        <input type="number" step="0.01" class="form-control" id="producto-precio" style="background:var(--vs-light);border:1px solid #e5e7eb;border-radius:8px;font-size:13px">
+                    </div>
+                    <div class="col-6">
+                        <label style="font-size:13px;color:var(--vs-gray);margin-bottom:4px">Categoria</label>
+                        <select class="form-select" id="producto-categoria" style="background:var(--vs-light);border:1px solid #e5e7eb;border-radius:8px;font-size:13px">
+                            <option value="">Sin categoria</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-6">
+                        <label style="font-size:13px;color:var(--vs-gray);margin-bottom:4px">Stock</label>
+                        <input type="number" class="form-control" id="producto-stock" value="0" style="background:var(--vs-light);border:1px solid #e5e7eb;border-radius:8px;font-size:13px">
+                    </div>
+                    <div class="col-6">
+                        <label style="font-size:13px;color:var(--vs-gray);margin-bottom:4px">Stock minimo</label>
+                        <input type="number" class="form-control" id="producto-stock-minimo" value="5" style="background:var(--vs-light);border:1px solid #e5e7eb;border-radius:8px;font-size:13px">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label style="font-size:13px;color:var(--vs-gray);margin-bottom:4px">Codigo de barras</label>
+                    <div class="d-flex gap-2">
+                        <input type="text" class="form-control" id="producto-barcode" placeholder="Escanea o escribe el codigo" style="background:var(--vs-light);border:1px solid #e5e7eb;border-radius:8px;font-size:13px">
+                        <button type="button" class="btn btn-vs btn-sm" id="btn-buscar-barcode" onclick="buscarBarcodeDesdeMod()" style="white-space:nowrap">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                    <div id="barcode-search-alert" class="alert-vs mt-2" style="display:none"></div>
+                </div>
+                <div class="mb-3">
+                    <label style="font-size:13px;color:var(--vs-gray);margin-bottom:4px">Descripcion</label>
+                    <textarea class="form-control" id="producto-descripcion" rows="2" style="background:var(--vs-light);border:1px solid #e5e7eb;border-radius:8px;font-size:13px"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer" style="border-top:1px solid #e5e7eb;padding:12px 20px">
+                <button class="btn" style="border:1px solid #e5e7eb;border-radius:8px;font-size:13px;color:var(--vs-gray)" data-bs-dismiss="modal">Cancelar</button>
+                <button class="btn btn-vs btn-sm" id="btn-guardar-producto" onclick="guardarProducto()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-stock" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content" style="border-radius:12px;border:none">
+            <div class="modal-header" style="border-bottom:1px solid #e5e7eb;padding:16px 20px">
+                <h6 style="color:var(--vs-navy);margin:0;font-weight:500">Ajustar stock</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:20px">
+                <p style="font-size:13px;color:var(--vs-navy);font-weight:500;margin:0 0 12px" id="stock-producto-nombre">Producto</p>
+                <input type="hidden" id="stock-producto-id">
+                <div class="mb-3">
+                    <label style="font-size:13px;color:var(--vs-gray);margin-bottom:4px">Cantidad</label>
+                    <input type="number" class="form-control" id="stock-cantidad" value="1" min="1" style="background:var(--vs-light);border:1px solid #e5e7eb;border-radius:8px;font-size:13px">
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-vs btn-sm flex-fill" onclick="ajustarStock('agregar')">
+                        <i class="bi bi-plus"></i> Agregar
+                    </button>
+                    <button class="btn btn-sm flex-fill" style="background:#fef2f2;color:#991b1b;border:1px solid #fecaca;border-radius:8px;font-size:12px" onclick="ajustarStock('quitar')">
+                        <i class="bi bi-dash"></i> Quitar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

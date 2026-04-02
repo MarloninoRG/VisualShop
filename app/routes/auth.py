@@ -193,6 +193,19 @@ def refresh():
 
     return jsonify({'access_token': new_token}), 200
 
+@auth_bp.route('/usuarios', methods=['GET'])
+@jwt_required()
+def listar_usuarios():
+    """Listar todos los usuarios. Solo admin."""
+    usuario_id = get_jwt_identity()
+    admin = Usuario.query.get(usuario_id)
+
+    if not admin or admin.rol != 'admin':
+        return jsonify({'error': 'Solo el administrador puede ver usuarios'}), 403
+
+    usuarios = Usuario.query.all()
+    return jsonify([u.to_dict() for u in usuarios]), 200
+
 
 # ==========================================
 # GOOGLE OAUTH
@@ -298,7 +311,12 @@ def google_callback():
             localStorage.setItem('access_token', '{jwt_access}');
             localStorage.setItem('refresh_token', '{jwt_refresh}');
             localStorage.setItem('usuario', '{usuario_json}');
-            window.location.href = '/dashboard';
+            var rol = '{usuario.rol}';
+            if (rol === 'cajero') {{
+                window.location.href = '/pos';
+            }} else {{
+                window.location.href = '/dashboard';
+            }}
         </script></body></html>
         '''
         return html

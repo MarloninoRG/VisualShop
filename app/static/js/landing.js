@@ -1,3 +1,18 @@
+/* Si ya hay sesion activa, redirigir al dashboard */
+(function() {
+    var token = localStorage.getItem('access_token');
+    var usuario = localStorage.getItem('usuario');
+
+    if (token && usuario) {
+        var user = JSON.parse(usuario);
+        if (user.rol === 'cajero') {
+            window.location.href = '/pos';
+        } else {
+            window.location.href = '/dashboard';
+        }
+    }
+})();
+
 const API = '';
 
 function showAlert(elementId, message, isSuccess) {
@@ -43,7 +58,11 @@ async function handleLogin() {
         localStorage.setItem('refresh_token', data.refresh_token);
         localStorage.setItem('usuario', JSON.stringify(data.usuario));
 
-        window.location.href = '/dashboard';
+        if (data.usuario.rol === 'cajero') {
+            window.location.href = '/pos';
+        } else {
+            window.location.href = '/dashboard';
+        }
 
     } catch (err) {
         showAlert('login-alert', 'Error de conexion con el servidor', false);

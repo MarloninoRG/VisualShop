@@ -22,7 +22,7 @@ class Config:
 
     # Configuracion de JWT
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'jwt-clave-por-defecto')
-    JWT_ACCESS_TOKEN_EXPIRES = 3600  # El token expira en 1 hora (3600 segundos)
+    JWT_ACCESS_TOKEN_EXPIRES = 86400  # El token expira en 1 dia (86400 segundos)
 
     # APIs externas
     SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')

@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Ventas - VisualShop{% endblock %}
+{% block nav_ventas %}active{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/ventas.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2 mb-3">
+    <div>
+        <h5 style="color:var(--vs-navy);font-weight:500;margin:0">Historial de ventas</h5>
+        <p style="font-size:12px;color:var(--vs-gray);margin:2px 0 0">Consulta todas las ventas registradas</p>
+    </div>
+    <div class="d-flex gap-2">
+        <input type="date" class="form-control" id="filtro-fecha" style="max-width:180px;background:var(--vs-light);border:1px solid #e5e7eb;border-radius:8px;font-size:13px;padding:6px 12px" onchange="cargarVentas()">
+        <button class="btn btn-sm" style="border:1px solid #e5e7eb;border-radius:8px;font-size:12px;color:var(--vs-gray)" onclick="limpiarFiltro()">
+            <i class="bi bi-x"></i> Limpiar
+        </button>
+    </div>
+</div>
+
+<div class="row g-3 mb-3">
+    <div class="col-6 col-md-3">
+        <div class="metric-card">
+            <p class="metric-label">Total ventas</p>
+            <p class="metric-value" id="ventas-total-count">--</p>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="metric-card">
+            <p class="metric-label">Ingresos</p>
+            <p class="metric-value" id="ventas-total-monto">--</p>
+        </div>
+    </div>
+</div>
+
+<div class="card-vs">
+    <div class="table-responsive">
+        <table class="table-vs">
+            <thead>
+                <tr>
+                    <th>Ticket</th>
+                    <th>Cajero</th>
+                    <th>Productos</th>
+                    <th>Total</th>
+                    <th>Metodo</th>
+                    <th>Fecha</th>
+                    <th>Detalle</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-historial-ventas">
+                <tr><td colspan="7" style="text-align:center;color:var(--vs-gray);padding:30px">Cargando...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-detalle-venta" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:12px;border:none">
+            <div class="modal-header" style="border-bottom:1px solid #e5e7eb;padding:16px 20px">
+                <h6 style="color:var(--vs-navy);margin:0;font-weight:500">Detalle de venta</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:20px" id="detalle-venta-body">
+                Cargando...
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
