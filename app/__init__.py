@@ -57,6 +57,12 @@ def create_app():
     
     from app.routes.views import views_bp
     app.register_blueprint(views_bp)
+    
+    from app.routes.weather import weather_bp
+    app.register_blueprint(weather_bp)
+    
+    from app.routes.email import email_bp
+    app.register_blueprint(email_bp)
 
     # 5. Crear las tablas si no existen
     with app.app_context():

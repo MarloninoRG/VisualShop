@@ -3,6 +3,7 @@
 {% block nav_pos %}active{% endblock %}
 
 {% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="{{ url_for('static', filename='js/pos.js') }}"></script>
 {% endblock %}
 
@@ -87,8 +88,19 @@
                 <h5 style="color:var(--vs-navy);margin-bottom:8px">Venta registrada</h5>
                 <p style="font-size:14px;color:var(--vs-gray);margin-bottom:4px">Ticket #<span id="venta-ticket-id">000</span></p>
                 <p style="font-size:24px;font-weight:500;color:var(--vs-navy);margin-bottom:20px" id="venta-total-final">$0.00</p>
-                <div class="d-flex gap-2 justify-content-center">
-                    <button class="btn btn-vs" onclick="cerrarModalVenta()">Nueva venta</button>
+                <div class="d-flex flex-column gap-2">
+                    <div class="d-flex gap-2 justify-content-center">
+                        <button class="btn" style="border:1px solid #e5e7eb;border-radius:8px;font-size:13px;color:var(--vs-navy)" onclick="descargarTicketPDF()">
+                            <i class="bi bi-download"></i> PDF
+                        </button>
+                        <button class="btn" style="border:1px solid #e5e7eb;border-radius:8px;font-size:13px;color:#25D366" onclick="enviarWhatsApp()">
+                            <i class="bi bi-whatsapp"></i> WhatsApp
+                        </button>
+                        <button class="btn" style="border:1px solid #e5e7eb;border-radius:8px;font-size:13px;color:var(--vs-navy)" onclick="enviarCorreo()">
+                            <i class="bi bi-envelope"></i> Correo
+                        </button>
+                    </div>
+                    <button class="btn btn-vs w-100" onclick="cerrarModalVenta()">Nueva venta</button>
                 </div>
             </div>
         </div>

@@ -54,7 +54,8 @@ function renderTablaVentas(ventas) {
             '<td style="font-weight:500">' + formatMoney(v.total) + '</td>' +
             '<td><span class="badge-vs ' + badgeClass + '">' + v.metodo_pago + '</span></td>' +
             '<td style="font-size:12px;color:var(--vs-gray)">' + fechaStr + '</td>' +
-            '<td><button class="btn btn-sm" style="border:1px solid #e5e7eb;border-radius:6px;font-size:11px;color:var(--vs-navy)" onclick="verDetalleVenta(' + v.id + ')"><i class="bi bi-eye"></i></button></td>' +
+            '<td><button class="btn btn-sm" style="border:1px solid #e5e7eb;border-radius:6px;font-size:11px;color:var(--vs-navy);margin-right:4px" onclick="verDetalleVenta(' + v.id + ')"><i class="bi bi-eye"></i></button>' +
+            '<button class="btn btn-sm" style="border:1px solid #e5e7eb;border-radius:6px;font-size:11px;color:var(--vs-navy)" onclick="descargarTicket(' + v.id + ')"><i class="bi bi-download"></i></button></td>' +
             '</tr>';
     });
 
@@ -108,6 +109,97 @@ async function verDetalleVenta(id) {
         modal.show();
     } catch (err) {
         alert('Error al cargar detalle');
+    }
+}
+
+async function descargarTicket(id) {
+    try {
+        var res = await apiFetch('/api/ventas/' + id);
+        if (!res) return;
+        var v = await res.json();
+
+        var jsPDF = window.jspdf.jsPDF;
+        var doc = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: [80, 200]
+        });
+
+        var y = 10;
+
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text('VisualShop', 40, y, { align: 'center' });
+        y += 5;
+
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Sistema de Punto de Venta', 40, y, { align: 'center' });
+        y += 4;
+        doc.text('Dolores Hidalgo, Gto.', 40, y, { align: 'center' });
+        y += 6;
+
+        doc.setDrawColor(200);
+        doc.line(5, y, 75, y);
+        y += 5;
+
+        doc.setFontSize(8);
+        doc.text('Ticket: #' + String(v.id).padStart(3, '0'), 5, y);
+        y += 4;
+
+        var fecha = new Date(v.fecha);
+        var fechaStr = fecha.toLocaleDateString('es-MX') + ' ' +
+            fecha.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+        doc.text('Fecha: ' + fechaStr, 5, y);
+        y += 4;
+        doc.text('Cajero: ' + (v.cajero || 'N/A'), 5, y);
+        y += 4;
+        doc.text('Metodo: ' + v.metodo_pago, 5, y);
+        y += 5;
+
+        doc.line(5, y, 75, y);
+        y += 5;
+
+        doc.setFont('helvetica', 'bold');
+        doc.text('Producto', 5, y);
+        doc.text('Cant', 45, y);
+        doc.text('Subtotal', 75, y, { align: 'right' });
+        y += 4;
+
+        doc.setFont('helvetica', 'normal');
+
+        if (v.detalles) {
+            v.detalles.forEach(function(d) {
+                doc.text(d.producto.substring(0, 22), 5, y);
+                doc.text(String(d.cantidad), 48, y);
+                doc.text('$' + d.subtotal.toFixed(2), 75, y, { align: 'right' });
+                y += 4;
+                doc.setFontSize(7);
+                doc.text('  $' + d.precio_unitario.toFixed(2) + ' c/u', 5, y);
+                doc.setFontSize(8);
+                y += 4;
+            });
+        }
+
+        y += 1;
+        doc.line(5, y, 75, y);
+        y += 5;
+
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'bold');
+        doc.text('TOTAL:', 5, y);
+        doc.text('$' + v.total.toFixed(2), 75, y, { align: 'right' });
+        y += 8;
+
+        doc.setFontSize(7);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Gracias por su compra!', 40, y, { align: 'center' });
+        y += 3;
+        doc.text('VisualShop - UTNG 2026', 40, y, { align: 'center' });
+
+        doc.save('ticket_' + String(v.id).padStart(3, '0') + '.pdf');
+    } catch (err) {
+        alert('Error al generar ticket');
     }
 }
 

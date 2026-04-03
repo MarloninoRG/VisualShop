@@ -10,7 +10,8 @@ async function loadDashboard() {
         loadResumen(),
         loadStockBajo(),
         loadUltimasVentas(),
-        loadVentasSemana()
+        loadVentasSemana(),
+        loadClima()
     ]);
 }
 
@@ -202,6 +203,24 @@ function renderChart(labels, valores) {
             }
         }
     });
+}
+
+async function loadClima() {
+    try {
+        var res = await apiFetch('/api/weather/Dolores Hidalgo');
+        if (!res) return;
+        var data = await res.json();
+
+        if (data.temperatura !== undefined) {
+            document.getElementById('clima-icono').src = data.icono_url;
+            document.getElementById('clima-temp').textContent = data.temperatura;
+            document.getElementById('clima-desc').textContent = data.descripcion;
+            document.getElementById('clima-ciudad').textContent = data.ciudad;
+            document.getElementById('widget-clima').style.display = 'flex';
+        }
+    } catch (err) {
+        console.error('Error cargando clima:', err);
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {

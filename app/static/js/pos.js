@@ -2,6 +2,7 @@ var todosProductos = [];
 var carrito = [];
 var metodoPago = 'efectivo';
 var tasaUSD = null;
+var ultimaVenta = null;
 
 async function cargarProductos() {
     try {
@@ -269,6 +270,7 @@ async function procesarVenta() {
 
         document.getElementById('venta-ticket-id').textContent = String(data.venta.id).padStart(3, '0');
         document.getElementById('venta-total-final').textContent = formatMoney(data.venta.total);
+        ultimaVenta = data.venta;
 
         var modal = new bootstrap.Modal(document.getElementById('modal-venta-exitosa'));
         modal.show();
@@ -298,6 +300,158 @@ async function cargarTasaUSD() {
         tasaUSD = data.tasas.USD;
     } catch (err) {
         console.error('Error cargando tasa USD:', err);
+    }
+}
+
+function descargarTicketPDF() {
+    if (!ultimaVenta) return;
+
+    var jsPDF = window.jspdf.jsPDF;
+    var doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: [80, 200]
+    });
+
+    var v = ultimaVenta;
+    var y = 10;
+
+    /* Encabezado */
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('VisualShop', 40, y, { align: 'center' });
+    y += 5;
+
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Sistema de Punto de Venta', 40, y, { align: 'center' });
+    y += 4;
+    doc.text('Dolores Hidalgo, Gto.', 40, y, { align: 'center' });
+    y += 6;
+
+    /* Linea divisora */
+    doc.setDrawColor(200);
+    doc.line(5, y, 75, y);
+    y += 5;
+
+    /* Info del ticket */
+    doc.setFontSize(8);
+    doc.text('Ticket: #' + String(v.id).padStart(3, '0'), 5, y);
+    y += 4;
+
+    var fecha = new Date(v.fecha);
+    var fechaStr = fecha.toLocaleDateString('es-MX') + ' ' +
+        fecha.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+    doc.text('Fecha: ' + fechaStr, 5, y);
+    y += 4;
+    doc.text('Cajero: ' + (v.cajero || 'N/A'), 5, y);
+    y += 4;
+    doc.text('Metodo: ' + v.metodo_pago, 5, y);
+    y += 5;
+
+    /* Linea divisora */
+    doc.line(5, y, 75, y);
+    y += 5;
+
+    /* Encabezado de productos */
+    doc.setFont('helvetica', 'bold');
+    doc.text('Producto', 5, y);
+    doc.text('Cant', 45, y);
+    doc.text('Subtotal', 75, y, { align: 'right' });
+    y += 4;
+
+    doc.setFont('helvetica', 'normal');
+
+    /* Productos */
+    if (v.detalles) {
+        v.detalles.forEach(function(d) {
+            doc.text(d.producto.substring(0, 22), 5, y);
+            doc.text(String(d.cantidad), 48, y);
+            doc.text('$' + d.subtotal.toFixed(2), 75, y, { align: 'right' });
+            y += 4;
+            doc.setFontSize(7);
+            doc.text('  $' + d.precio_unitario.toFixed(2) + ' c/u', 5, y);
+            doc.setFontSize(8);
+            y += 4;
+        });
+    }
+
+    /* Linea divisora */
+    y += 1;
+    doc.line(5, y, 75, y);
+    y += 5;
+
+    /* Total */
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text('TOTAL:', 5, y);
+    doc.text('$' + v.total.toFixed(2), 75, y, { align: 'right' });
+    y += 8;
+
+    /* Pie */
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Gracias por su compra!', 40, y, { align: 'center' });
+    y += 3;
+    doc.text('VisualShop - UTNG 2026', 40, y, { align: 'center' });
+
+    /* Descargar */
+    doc.save('ticket_' + String(v.id).padStart(3, '0') + '.pdf');
+}
+
+function enviarWhatsApp() {
+    if (!ultimaVenta) return;
+
+    var v = ultimaVenta;
+    var mensaje = '*VisualShop - Ticket #' + String(v.id).padStart(3, '0') + '*\n\n';
+
+    if (v.detalles) {
+        v.detalles.forEach(function(d) {
+            mensaje += d.cantidad + 'x ' + d.producto + ' - $' + d.subtotal.toFixed(2) + '\n';
+        });
+    }
+
+    mensaje += '\n*Total: $' + v.total.toFixed(2) + '*\n';
+    mensaje += 'Metodo: ' + v.metodo_pago + '\n';
+
+    var fecha = new Date(v.fecha);
+    mensaje += 'Fecha: ' + fecha.toLocaleDateString('es-MX') + ' ' +
+        fecha.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }) + '\n';
+    mensaje += '\nGracias por su compra!';
+
+    var url = 'https://wa.me/?text=' + encodeURIComponent(mensaje);
+    window.open(url, '_blank');
+}
+
+function enviarCorreo() {
+    if (!ultimaVenta) return;
+
+    var email = prompt('Ingresa el correo del cliente:');
+    if (!email) return;
+
+    enviarTicketPorCorreo(ultimaVenta.id, email);
+}
+
+async function enviarTicketPorCorreo(ventaId, email) {
+    try {
+        var res = await apiFetch('/api/email/ticket', {
+            method: 'POST',
+            body: JSON.stringify({
+                venta_id: ventaId,
+                email: email
+            })
+        });
+
+        var data = await res.json();
+
+        if (!res.ok) {
+            alert(data.error || 'Error al enviar correo');
+            return;
+        }
+
+        alert('Ticket enviado a ' + email);
+    } catch (err) {
+        alert('Error de conexion al enviar correo');
     }
 }
 

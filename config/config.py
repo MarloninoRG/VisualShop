@@ -33,3 +33,6 @@ class Config:
     # Google OAuth
     GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
     GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
+    
+    # SendGrid para envio de tickets de compra
+    SENDGRID_FROM_EMAIL = os.getenv('SENDGRID_FROM_EMAIL')
