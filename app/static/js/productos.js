@@ -335,6 +335,107 @@ async function buscarBarcodeDesdeMod() {
     }
 }
 
+function abrirModalCategoria() {
+    document.getElementById('nueva-categoria-nombre').value = '';
+    var alertEl = document.getElementById('categoria-alert');
+    if (alertEl) alertEl.style.display = 'none';
+
+    renderListaCategorias();
+
+    var modal = new bootstrap.Modal(document.getElementById('modal-categorias'));
+    modal.show();
+}
+
+function renderListaCategorias() {
+    var container = document.getElementById('lista-categorias');
+
+    if (!listaCategorias || listaCategorias.length === 0) {
+        container.innerHTML = '<p style="font-size:13px;color:var(--vs-gray);text-align:center">No hay categorias creadas</p>';
+        return;
+    }
+
+    var html = '';
+    listaCategorias.forEach(function(c) {
+        var numProductos = listaProductos.filter(function(p) {
+            return p.categoria && p.categoria.id === c.id;
+        }).length;
+
+        html += '<div class="d-flex justify-content-between align-items-center" style="padding:8px 0;border-bottom:1px solid #f3f4f6">' +
+            '<div>' +
+            '<span style="font-size:13px;font-weight:500;color:var(--vs-navy)">' + c.nombre + '</span>' +
+            '<span style="font-size:11px;color:var(--vs-gray);margin-left:8px">' + numProductos + ' producto' + (numProductos !== 1 ? 's' : '') + '</span>' +
+            '</div>' +
+            '<button class="btn btn-sm" style="border:1px solid #fecaca;border-radius:6px;font-size:11px;color:#991b1b" onclick="eliminarCategoria(' + c.id + ', \'' + c.nombre.replace(/'/g, "\\'") + '\')">' +
+            '<i class="bi bi-trash3"></i></button>' +
+            '</div>';
+    });
+
+    container.innerHTML = html;
+}
+
+async function crearCategoria() {
+    var nombre = document.getElementById('nueva-categoria-nombre').value.trim();
+    var alertEl = document.getElementById('categoria-alert');
+
+    if (!nombre) {
+        alertEl.textContent = 'Escribe un nombre para la categoria';
+        alertEl.className = 'alert-vs mb-3';
+        alertEl.style.display = 'block';
+        return;
+    }
+
+    try {
+        var res = await apiFetch('/api/categorias', {
+            method: 'POST',
+            body: JSON.stringify({ nombre: nombre })
+        });
+
+        var data = await res.json();
+
+        if (!res.ok) {
+            alertEl.textContent = data.error || 'Error al crear categoria';
+            alertEl.className = 'alert-vs mb-3';
+            alertEl.style.display = 'block';
+            return;
+        }
+
+        alertEl.textContent = 'Categoria "' + nombre + '" creada';
+        alertEl.className = 'alert-vs success mb-3';
+        alertEl.style.display = 'block';
+
+        document.getElementById('nueva-categoria-nombre').value = '';
+
+        await cargarCategorias();
+        renderListaCategorias();
+
+    } catch (err) {
+        alertEl.textContent = 'Error de conexion';
+        alertEl.className = 'alert-vs mb-3';
+        alertEl.style.display = 'block';
+    }
+}
+
+async function eliminarCategoria(id, nombre) {
+    if (!confirm('Eliminar la categoria "' + nombre + '"?')) return;
+
+    try {
+        var res = await apiFetch('/api/categorias/' + id, { method: 'DELETE' });
+        var data = await res.json();
+
+        if (!res.ok) {
+            alert(data.error || 'Error al eliminar');
+            return;
+        }
+
+        await cargarCategorias();
+        renderListaCategorias();
+        cargarListaProductos();
+
+    } catch (err) {
+        alert('Error de conexion');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     cargarTodo();
 });
