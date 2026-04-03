@@ -54,8 +54,9 @@ function renderTablaVentas(ventas) {
             '<td style="font-weight:500">' + formatMoney(v.total) + '</td>' +
             '<td><span class="badge-vs ' + badgeClass + '">' + v.metodo_pago + '</span></td>' +
             '<td style="font-size:12px;color:var(--vs-gray)">' + fechaStr + '</td>' +
-            '<td><button class="btn btn-sm" style="border:1px solid #e5e7eb;border-radius:6px;font-size:11px;color:var(--vs-navy);margin-right:4px" onclick="verDetalleVenta(' + v.id + ')"><i class="bi bi-eye"></i></button>' +
-            '<button class="btn btn-sm" style="border:1px solid #e5e7eb;border-radius:6px;font-size:11px;color:var(--vs-navy)" onclick="descargarTicket(' + v.id + ')"><i class="bi bi-download"></i></button></td>' +
+            '<td><button class="btn btn-sm" style="border:1px solid #e5e7eb;border-radius:6px;font-size:11px;color:var(--vs-navy);margin-right:4px" onclick="verDetalleVenta(' + v.id + ')" title="Ver detalle"><i class="bi bi-eye"></i></button>' +
+            '<button class="btn btn-sm" style="border:1px solid #e5e7eb;border-radius:6px;font-size:11px;color:var(--vs-navy);margin-right:4px" onclick="descargarTicket(' + v.id + ')" title="Descargar ticket"><i class="bi bi-download"></i></button>' +
+            '<button class="btn btn-sm" style="border:1px solid #e5e7eb;border-radius:6px;font-size:11px;color:var(--vs-navy)" onclick="facturarVenta(' + v.id + ')" title="Facturar"><i class="bi bi-receipt"></i></button></td>' +
             '</tr>';
     });
 
@@ -200,6 +201,68 @@ async function descargarTicket(id) {
         doc.save('ticket_' + String(v.id).padStart(3, '0') + '.pdf');
     } catch (err) {
         alert('Error al generar ticket');
+    }
+}
+
+async function facturarVenta(ventaId) {
+    var nombre = prompt('Nombre o razon social del cliente:\n(Dejar vacio para Publico en General)');
+    if (nombre === null) return;
+
+    var rfc = '';
+    var email = '';
+
+    if (nombre) {
+        rfc = prompt('RFC del cliente:');
+        if (rfc === null) return;
+
+        email = prompt('Email del cliente (para enviar la factura):');
+        if (email === null) return;
+    }
+
+    var datos = {
+        venta_id: ventaId,
+        cliente: {}
+    };
+
+    if (nombre) {
+        datos.cliente = {
+            legal_name: nombre,
+            tax_id: rfc || 'XAXX010101000',
+            email: email || ''
+        };
+    }
+
+    try {
+        var btn = event.target.closest('button');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
+        var res = await apiFetch('/api/facturas/crear', {
+            method: 'POST',
+            body: JSON.stringify(datos)
+        });
+
+        var data = await res.json();
+
+        if (!res.ok) {
+            alert('Error: ' + (data.error || 'No se pudo crear la factura') + '\n' + (data.detalle || ''));
+            return;
+        }
+
+        var mensaje = 'Factura creada exitosamente!\n\n' +
+            'UUID: ' + (data.factura.uuid || 'Sandbox') + '\n' +
+            'Total: $' + data.factura.total + '\n\n' +
+            'Deseas descargar el PDF?';
+
+        if (confirm(mensaje)) {
+            window.open('/api/facturas/descargar/' + data.factura.id + '/pdf', '_blank');
+        }
+
+    } catch (err) {
+        alert('Error de conexion al facturar');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-receipt"></i>';
     }
 }
 

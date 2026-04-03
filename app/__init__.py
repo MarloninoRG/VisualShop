@@ -63,6 +63,9 @@ def create_app():
     
     from app.routes.email import email_bp
     app.register_blueprint(email_bp)
+    
+    from app.routes.facturacion import facturacion_bp
+    app.register_blueprint(facturacion_bp)
 
     # 5. Crear las tablas si no existen
     with app.app_context():
