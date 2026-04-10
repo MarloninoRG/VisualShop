@@ -218,7 +218,7 @@ def google_login():
         google_config = http_requests.get(GOOGLE_DISCOVERY_URL, timeout=10).json()
         authorization_endpoint = google_config['authorization_endpoint']
 
-        redirect_uri = url_for('auth.google_callback', _external=True)
+        redirect_uri = url_for('auth.google_callback', _external=True, _scheme='https')
 
         params = {
             'client_id': GOOGLE_CLIENT_ID,
@@ -267,7 +267,7 @@ def google_callback():
             'code': code,
             'client_id': GOOGLE_CLIENT_ID,
             'client_secret': GOOGLE_CLIENT_SECRET,
-            'redirect_uri': url_for('auth.google_callback', _external=True),
+            'redirect_uri': url_for('auth.google_callback', _external=True, _scheme='https'),
             'grant_type': 'authorization_code'
         }
 
