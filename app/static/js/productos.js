@@ -111,10 +111,10 @@ function renderTabla(productos) {
             '<td><div><span style="font-weight:500">' + p.nombre + '</span>' +
             (p.codigo_barras ? '<br><span style="font-size:11px;color:var(--vs-gray)">' + p.codigo_barras + '</span>' : '') +
             '</div></td>' +
-            '<td>' + (p.categoria ? p.categoria.nombre : '<span style="color:var(--vs-gray-light)">--</span>') + '</td>' +
+            '<td class="hide-mobile">' + (p.categoria ? p.categoria.nombre : '<span style="color:var(--vs-gray-light)">--</span>') + '</td>' +
             '<td style="font-weight:500">' + formatMoney(p.precio) + '</td>' +
             '<td>' + p.stock + ' <span style="font-size:11px;color:var(--vs-gray)">(min: ' + p.stock_minimo + ')</span></td>' +
-            '<td>' + estadoBadge + '</td>' +
+            '<td class="hide-mobile">' + estadoBadge + '</td>' +
             '<td>' + acciones + '</td>' +
             '</tr>';
     });

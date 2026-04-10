@@ -524,3 +524,70 @@ body {
         padding: 12px;
     }
 }
+
+/* Responsive para tablas en movil */
+@media (max-width: 768px) {
+    .table-vs {
+        font-size: 12px;
+    }
+
+    .table-vs th,
+    .table-vs td {
+        padding: 6px;
+    }
+
+    .card-vs {
+        padding: 14px;
+    }
+
+    .metric-card {
+        padding: 12px;
+    }
+
+    .metric-value {
+        font-size: 18px;
+    }
+
+    /* Productos grid en movil */
+    .producto-card {
+        padding: 10px;
+    }
+
+    .producto-nombre {
+        font-size: 12px;
+    }
+
+    .producto-precio {
+        font-size: 13px;
+    }
+
+    /* Carrito sticky desactivar en movil */
+    .card-vs[style*="sticky"] {
+        position: relative !important;
+        top: auto !important;
+    }
+
+    /* Botones de accion en tablas */
+    .table-vs td:last-child {
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 576px) {
+    .main-body {
+        padding: 10px;
+    }
+
+    .metric-value {
+        font-size: 16px;
+    }
+
+    .card-vs-title {
+        font-size: 14px;
+    }
+
+    /* Ocultar columnas menos importantes en movil */
+    .hide-mobile {
+        display: none;
+    }
+}

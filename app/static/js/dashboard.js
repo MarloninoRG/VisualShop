@@ -74,8 +74,8 @@ async function loadUltimasVentas() {
                 '<td>#' + String(v.id).padStart(3, '0') + '</td>' +
                 '<td>' + (v.cajero || 'N/A') + '</td>' +
                 '<td>' + formatMoney(v.total) + '</td>' +
-                '<td><span class="badge-vs ' + badgeClass + '">' + v.metodo_pago + '</span></td>' +
-                '<td style="font-size:12px;color:var(--vs-gray)">' + fechaStr + '</td>' +
+                '<td class="hide-mobile"><span class="badge-vs ' + badgeClass + '">' + v.metodo_pago + '</span></td>' +
+                '<td class="hide-mobile" style="font-size:12px;color:var(--vs-gray)">' + fechaStr + '</td>' +
                 '</tr>';
         });
 

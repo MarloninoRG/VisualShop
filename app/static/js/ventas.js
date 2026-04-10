@@ -50,10 +50,10 @@ function renderTablaVentas(ventas) {
         html += '<tr>' +
             '<td style="font-weight:500">#' + String(v.id).padStart(3, '0') + '</td>' +
             '<td>' + (v.cajero || 'N/A') + '</td>' +
-            '<td>' + numProductos + ' item' + (numProductos > 1 ? 's' : '') + '</td>' +
+            '<td class="hide-mobile">' + numProductos + ' item' + (numProductos > 1 ? 's' : '') + '</td>' +
             '<td style="font-weight:500">' + formatMoney(v.total) + '</td>' +
-            '<td><span class="badge-vs ' + badgeClass + '">' + v.metodo_pago + '</span></td>' +
-            '<td style="font-size:12px;color:var(--vs-gray)">' + fechaStr + '</td>' +
+            '<td class="hide-mobile"><span class="badge-vs ' + badgeClass + '">' + v.metodo_pago + '</span></td>' +
+            '<td class="hide-mobile" style="font-size:12px;color:var(--vs-gray)">' + fechaStr + '</td>' +
             '<td><button class="btn btn-sm" style="border:1px solid #e5e7eb;border-radius:6px;font-size:11px;color:var(--vs-navy);margin-right:4px" onclick="verDetalleVenta(' + v.id + ')" title="Ver detalle"><i class="bi bi-eye"></i></button>' +
             '<button class="btn btn-sm" style="border:1px solid #e5e7eb;border-radius:6px;font-size:11px;color:var(--vs-navy);margin-right:4px" onclick="descargarTicket(' + v.id + ')" title="Descargar ticket"><i class="bi bi-download"></i></button>' +
             '<button class="btn btn-sm" style="border:1px solid #e5e7eb;border-radius:6px;font-size:11px;color:var(--vs-navy)" onclick="facturarVenta(' + v.id + ')" title="Facturar"><i class="bi bi-receipt"></i></button></td>' +
