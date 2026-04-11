@@ -26,11 +26,12 @@
                     <th>Email</th>
                     <th>Rol</th>
                     <th>Estado</th>
-                    <th>Creado</th>
+                    <th class="hide-mobile">Creado</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody id="tabla-usuarios">
-                <tr><td colspan="5" style="text-align:center;color:var(--vs-gray);padding:30px">Cargando...</td></tr>
+                <tr><td colspan="6" style="text-align:center;color:var(--vs-gray);padding:30px">Cargando...</td></tr>
             </tbody>
         </table>
     </div>
@@ -70,6 +71,62 @@
             <div class="modal-footer" style="border-top:1px solid #e5e7eb;padding:12px 20px">
                 <button class="btn" style="border:1px solid #e5e7eb;border-radius:8px;font-size:13px;color:var(--vs-gray)" data-bs-dismiss="modal">Cancelar</button>
                 <button class="btn btn-vs btn-sm" id="btn-guardar-usuario" onclick="guardarUsuario()">Registrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-editar-usuario" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:12px;border:none">
+            <div class="modal-header" style="border-bottom:1px solid #e5e7eb;padding:16px 20px">
+                <h6 style="color:var(--vs-navy);margin:0;font-weight:500">Editar usuario</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:20px">
+                <div id="editar-usuario-alert" class="alert-vs mb-3" style="display:none"></div>
+                <input type="hidden" id="editar-usuario-id">
+                <div class="mb-3">
+                    <label style="font-size:13px;color:var(--vs-gray);margin-bottom:4px">Nombre completo</label>
+                    <input type="text" class="form-control" id="editar-usuario-nombre" style="background:var(--vs-light);border:1px solid #e5e7eb;border-radius:8px;font-size:13px">
+                </div>
+                <div class="mb-3">
+                    <label style="font-size:13px;color:var(--vs-gray);margin-bottom:4px">Email</label>
+                    <input type="email" class="form-control" id="editar-usuario-email" style="background:var(--vs-light);border:1px solid #e5e7eb;border-radius:8px;font-size:13px">
+                </div>
+                <div class="mb-3">
+                    <label style="font-size:13px;color:var(--vs-gray);margin-bottom:4px">Rol</label>
+                    <select class="form-select" id="editar-usuario-rol" style="background:var(--vs-light);border:1px solid #e5e7eb;border-radius:8px;font-size:13px">
+                        <option value="cajero">Cajero</option>
+                        <option value="supervisor">Supervisor</option>
+                        <option value="admin">Administrador</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer" style="border-top:1px solid #e5e7eb;padding:12px 20px">
+                <button class="btn" style="border:1px solid #e5e7eb;border-radius:8px;font-size:13px;color:var(--vs-gray)" data-bs-dismiss="modal">Cancelar</button>
+                <button class="btn btn-vs btn-sm" onclick="guardarEdicionUsuario()">Guardar cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-reset-password" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content" style="border-radius:12px;border:none">
+            <div class="modal-header" style="border-bottom:1px solid #e5e7eb;padding:16px 20px">
+                <h6 style="color:var(--vs-navy);margin:0;font-weight:500">Cambiar contrasena</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:20px">
+                <input type="hidden" id="reset-usuario-id">
+                <p style="font-size:13px;color:var(--vs-navy);font-weight:500;margin:0 0 12px" id="reset-usuario-nombre">Usuario</p>
+                <div id="reset-password-alert" class="alert-vs mb-3" style="display:none"></div>
+                <div class="mb-3">
+                    <label style="font-size:13px;color:var(--vs-gray);margin-bottom:4px">Nueva contrasena</label>
+                    <input type="password" class="form-control" id="reset-password-nueva" style="background:var(--vs-light);border:1px solid #e5e7eb;border-radius:8px;font-size:13px">
+                </div>
+                <button class="btn btn-vs btn-sm w-100" onclick="guardarResetPassword()">Cambiar contrasena</button>
             </div>
         </div>
     </div>

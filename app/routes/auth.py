@@ -206,6 +206,115 @@ def listar_usuarios():
     usuarios = Usuario.query.all()
     return jsonify([u.to_dict() for u in usuarios]), 200
 
+@auth_bp.route('/reset-password', methods=['PUT'])
+@jwt_required()
+def reset_password():
+    """El admin puede resetear la contrasena de cualquier usuario.
+
+    Espera:
+    {
+        "usuario_id": 2,
+        "password_nueva": "NuevaPassword123"
+    }
+    """
+    admin_id = get_jwt_identity()
+    admin = Usuario.query.get(admin_id)
+
+    if not admin or admin.rol != 'admin':
+        return jsonify({'error': 'Solo el administrador puede resetear contrasenas'}), 403
+
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'No se enviaron datos'}), 400
+
+    usuario_id = data.get('usuario_id')
+    password_nueva = data.get('password_nueva')
+
+    if not usuario_id or not password_nueva:
+        return jsonify({'error': 'Faltan campos: usuario_id y password_nueva'}), 400
+
+    usuario = Usuario.query.get(usuario_id)
+    if not usuario:
+        return jsonify({'error': 'Usuario no encontrado'}), 404
+
+    usuario.password = bcrypt.generate_password_hash(password_nueva).decode('utf-8')
+    db.session.commit()
+
+    return jsonify({'mensaje': f'Contrasena de {usuario.nombre} actualizada'}), 200
+
+
+@auth_bp.route('/editar-usuario/<int:id>', methods=['PUT'])
+@jwt_required()
+def editar_usuario(id):
+    """El admin puede editar nombre, email y rol de un usuario.
+
+    Espera:
+    {
+        "nombre": "Nuevo Nombre",
+        "email": "nuevo@email.com",
+        "rol": "supervisor"
+    }
+    """
+    admin_id = get_jwt_identity()
+    admin = Usuario.query.get(admin_id)
+
+    if not admin or admin.rol != 'admin':
+        return jsonify({'error': 'Solo el administrador puede editar usuarios'}), 403
+
+    usuario = Usuario.query.get(id)
+    if not usuario:
+        return jsonify({'error': 'Usuario no encontrado'}), 404
+
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'No se enviaron datos'}), 400
+
+    if 'nombre' in data:
+        usuario.nombre = data['nombre']
+    if 'email' in data:
+        existente = Usuario.query.filter_by(email=data['email']).first()
+        if existente and existente.id != id:
+            return jsonify({'error': 'Ya existe un usuario con ese email'}), 409
+        usuario.email = data['email']
+    if 'rol' in data:
+        roles_validos = ['admin', 'supervisor', 'cajero']
+        if data['rol'] not in roles_validos:
+            return jsonify({'error': f'Rol invalido. Usa: {roles_validos}'}), 400
+        usuario.rol = data['rol']
+
+    db.session.commit()
+
+    return jsonify({
+        'mensaje': 'Usuario actualizado',
+        'usuario': usuario.to_dict()
+    }), 200
+
+
+@auth_bp.route('/desactivar-usuario/<int:id>', methods=['PUT'])
+@jwt_required()
+def desactivar_usuario(id):
+    """El admin puede activar o desactivar un usuario."""
+    admin_id = get_jwt_identity()
+    admin = Usuario.query.get(admin_id)
+
+    if not admin or admin.rol != 'admin':
+        return jsonify({'error': 'Solo el administrador puede hacer esto'}), 403
+
+    if str(id) == str(admin_id):
+        return jsonify({'error': 'No puedes desactivarte a ti mismo'}), 400
+
+    usuario = Usuario.query.get(id)
+    if not usuario:
+        return jsonify({'error': 'Usuario no encontrado'}), 404
+
+    usuario.activo = not usuario.activo
+    db.session.commit()
+
+    estado = 'activado' if usuario.activo else 'desactivado'
+    return jsonify({
+        'mensaje': f'Usuario {estado}',
+        'usuario': usuario.to_dict()
+    }), 200
 
 # ==========================================
 # GOOGLE OAUTH
